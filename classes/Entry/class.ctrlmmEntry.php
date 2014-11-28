@@ -683,7 +683,7 @@ class ctrlmmEntry {
 				}
 			}
 
-			$childs = self::getPluginEntries($childs, $id);
+			//$childs = self::getPluginEntries($childs, $id);
 
 			self::$childs_cache[$id] = $childs;
 		}
