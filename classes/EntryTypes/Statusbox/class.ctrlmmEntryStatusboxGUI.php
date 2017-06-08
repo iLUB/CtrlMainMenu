@@ -19,9 +19,12 @@ class ctrlmmEntryStatusboxGUI extends ctrlmmEntryGUI {
 
 
 	/**
+	 * @param string $entry_div_id
 	 * @return string
 	 */
 	public function renderEntry($entry_div_id = '') {
+		unset($entry_div_id);
+
 		$this->tpl->addCss('./Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/CtrlMainMenu/templates/css/statusbox.css');
 
 		$this->html = $this->pl->getVersionTemplate('tpl.menu_statusbox.html', false, true);
@@ -31,7 +34,7 @@ class ctrlmmEntryStatusboxGUI extends ctrlmmEntryGUI {
 		$this->html->setVariable('CSS_PREFIX', ctrlmmMenu::getCssPrefix());
 		$this->html->setVariable('NEWMAIL', $this->entry->getNewMailCount());
 		$this->html->setVariable('TARGET', $this->entry->getTarget());
-		$this->html->setVariable('STATE', ($this->entry->isActive() ? ilCtrlMainMenuConfig::get(ilCtrlMainMenuConfig::F_CSS_ACTIVE) : ilCtrlMainMenuConfig::get(ilCtrlMainMenuConfig::F_CSS_INACTIVE)));
+		$this->html->setVariable('STATE', ($this->entry->isActive() ? ilCtrlMainMenuConfig::getConfigValue(ilCtrlMainMenuConfig::F_CSS_ACTIVE) : ilCtrlMainMenuConfig::getConfigValue(ilCtrlMainMenuConfig::F_CSS_INACTIVE)));
 
 		return $this->html->get();
 	}

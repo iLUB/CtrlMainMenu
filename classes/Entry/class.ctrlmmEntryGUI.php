@@ -25,7 +25,7 @@ class ctrlmmEntryGUI {
 	/**
 	 * @var ctrlmmEntry
 	 */
-	public $entry;
+	protected $entry;
 	/**
 	 * @var ilPropertyFormGUI
 	 */
@@ -38,9 +38,9 @@ class ctrlmmEntryGUI {
 
 	/**
 	 * @param ctrlmmEntry $entry
-	 * @param null        $parent_gui
+	 * @param null $parent_gui
 	 */
-	public function __construct(ctrlmmEntry $entry, $parent_gui = NULL) {
+	public function __construct(ctrlmmEntry $entry, $parent_gui = null) {
 		global $ilCtrl, $tpl;
 		/**
 		 * @var $ilCtrl ilCtrl
@@ -87,18 +87,18 @@ class ctrlmmEntryGUI {
 
 
 	/**
-	 * @param string $entry_div_id If set, the value is used to construct the unique ID of the entry (HTML)
+	 * @param string $entry_div_id
 	 * @return string
 	 */
-	protected function renderEntry($entry_div_id = '') {
+	public function renderEntry($entry_div_id = '') {
 		$this->html = $this->pl->getVersionTemplate('tpl.ctrl_menu_entry.html', true, true);
 		$this->html->setVariable('TITLE', $this->entry->getTitle());
-		$this->html->setVariable('CSS_ID', 'ctrl_mm_e_' . ($entry_div_id) ? $entry_div_id : $this->entry->getId());
+		$this->html->setVariable('CSS_ID', ($entry_div_id) ? $entry_div_id : 'ctrl_mm_e_' . $this->entry->getId());
 		$this->html->setVariable('LINK', $this->entry->getLink());
-		$this->html->setVariable('CSS_PREFIX', ilCtrlMainMenuConfig::get(ilCtrlMainMenuConfig::F_CSS_PREFIX));
+		$this->html->setVariable('CSS_PREFIX', ilCtrlMainMenuConfig::getConfigValue(ilCtrlMainMenuConfig::F_CSS_PREFIX));
 		$this->html->setVariable('TARGET', $this->entry->getTarget());
-		$cssActive = ilCtrlMainMenuConfig::get(ilCtrlMainMenuConfig::F_CSS_ACTIVE);
-		$cssInactive = ilCtrlMainMenuConfig::get(ilCtrlMainMenuConfig::F_CSS_INACTIVE);
+		$cssActive = ilCtrlMainMenuConfig::getConfigValue(ilCtrlMainMenuConfig::F_CSS_ACTIVE);
+		$cssInactive = ilCtrlMainMenuConfig::getConfigValue(ilCtrlMainMenuConfig::F_CSS_INACTIVE);
 		$this->html->setVariable('STATE', ($this->entry->isActive() ? $cssActive : $cssInactive));
 
 		return $this->html->get();
@@ -128,7 +128,7 @@ class ctrlmmEntryGUI {
 		$this->form = new ilPropertyFormGUI();
 		$this->initPermissionSelectionForm();
 		$te = new ilFormSectionHeaderGUI();
-		$te->setTitle($this->pl->txt('title'));
+		$te->setTitle($this->pl->txt('common_title'));
 		$this->form->addItem($te);
 		$this->form->setTitle($this->pl->txt('form_title'));
 		$this->form->setFormAction($this->ctrl->getFormAction($this->parent_gui));
@@ -145,14 +145,14 @@ class ctrlmmEntryGUI {
 
 		if (count(ctrlmmEntry::getAdditionalFieldsAsArray($this->entry)) > 0) {
 			$te = new ilFormSectionHeaderGUI();
-			$te->setTitle($this->pl->txt('settings'));
+			$te->setTitle($this->pl->txt('common_settings'));
 			$this->form->addItem($te);
 		}
-		$this->form->addCommandButton($mode . 'Object', $this->pl->txt('create'));
+		$this->form->addCommandButton($mode . 'Object', $this->pl->txt('common_create'));
 		if ($mode != 'create') {
 			$this->form->addCommandButton($mode . 'ObjectAndStay', $this->pl->txt('create_and_stay'));
 		}
-		$this->form->addCommandButton('configure', $this->pl->txt('cancel'));
+		$this->form->addCommandButton('configure', $this->pl->txt('common_cancel'));
 	}
 
 
@@ -166,17 +166,26 @@ class ctrlmmEntryGUI {
 		}
 		$perm_type = $this->entry->getPermissionType();
 		$values['permission_type'] = $perm_type;
-		$role_ids = json_decode($this->entry->getPermission());
-		$roles_global = @array_intersect($role_ids, self::getRoles(ilRbacReview::FILTER_ALL_GLOBAL, false));
-		$roles_local = @array_intersect($role_ids, self::getRoles(ilRbacReview::FILTER_ALL_LOCAL, false));
-		//$roles_local = @array_diff($role_ids, $roles_global); // Bessere Variante, da auch falsche vorhanden
-		$values['permission_' . $perm_type] = $roles_global;
-		$values['permission_locale_' . $perm_type] = @implode(',', $roles_local); // Variante Textfeld
-		// $values['permission_locale_' . $perm_type] = $roles_local; // Variante MultiSelect
-		$role_ids_as_string = '';
-		if (is_array($role_ids) AND count($role_ids) > 0) {
-			$role_ids_as_string = implode(',', $role_ids);
+
+		if ($perm_type == ctrlmmMenu::PERM_SCRIPT) {
+			$perm_settings = json_decode($this->entry->getPermission());
+			$values['perm_input_script_path'] = $perm_settings[0];
+			$values['perm_input_script_class'] = $perm_settings[1];
+			$values['perm_input_script_method'] = $perm_settings[2];
+		} else {
+			$role_ids = json_decode($this->entry->getPermission());
+			$roles_global = @array_intersect($role_ids, self::getRoles(ilRbacReview::FILTER_ALL_GLOBAL, false));
+			$roles_local = @array_intersect($role_ids, self::getRoles(ilRbacReview::FILTER_ALL_LOCAL, false));
+			//$roles_local = @array_diff($role_ids, $roles_global); // Bessere Variante, da auch falsche vorhanden
+			$values['permission_' . $perm_type] = $roles_global;
+			$values['permission_locale_' . $perm_type] = @implode(',', $roles_local); // Variante Textfeld
+			// $values['permission_locale_' . $perm_type] = $roles_local; // Variante MultiSelect
+			$role_ids_as_string = '';
+			if (is_array($role_ids) AND count($role_ids) > 0) {
+				$role_ids_as_string = implode(',', $role_ids);
+			}
 		}
+
 		$values['permission_user_' . $perm_type] = $role_ids_as_string;
 		$values['type'] = $this->entry->getType();
 		$this->form->setValuesByArray($values);
@@ -186,7 +195,7 @@ class ctrlmmEntryGUI {
 
 
 	/**
-	 * @param int  $filter
+	 * @param int $filter
 	 * @param bool $with_text
 	 *
 	 * @deprecated
@@ -244,6 +253,14 @@ class ctrlmmEntryGUI {
 					$te->setInfo($this->pl->txt('perm_input_user_info'));
 					$option->addSubItem($te);
 					break;
+				case ctrlmmMenu::PERM_SCRIPT :
+					$te = new ilTextInputGUI($this->pl->txt('perm_input_script_path'), 'perm_input_script_path');
+					$option->addSubItem($te);
+					$te = new ilTextInputGUI($this->pl->txt('perm_input_script_class'), 'perm_input_script_class');
+					$option->addSubItem($te);
+					$te = new ilTextInputGUI($this->pl->txt('perm_input_script_method'), 'perm_input_script_method');
+					$option->addSubItem($te);
+					break;
 			}
 			$ro->addOption($option);
 		}
@@ -265,11 +282,18 @@ class ctrlmmEntryGUI {
 		$this->entry->setPermissionType($perm_type);
 		if ($this->form->getInput('permission_locale_' . $perm_type)) {
 			$permission = array_merge(explode(',', $this->form->getInput('permission_locale_'
-				. $perm_type)), (array)$this->form->getInput('permission_' . $perm_type)); // Variante Textfeld
+			                                                             . $perm_type)), (array)$this->form->getInput('permission_'
+			                                                                                                          . $perm_type)); // Variante Textfeld
 			/*$permission = array_merge((array)$this->form->getInput('permission_locale_'
 				. $perm_type), (array)$this->form->getInput('permission_' . $perm_type));*/
 		} elseif ($this->form->getInput('permission_user_' . $perm_type)) {
 			$permission = explode(',', $this->form->getInput('permission_user_' . $perm_type));
+		} elseif ($this->form->getInput('permission_type') == ctrlmmMenu::PERM_SCRIPT) {
+			$permission = array(
+				0 => $this->form->getInput('perm_input_script_path'),
+				1 => $this->form->getInput('perm_input_script_class'),
+				2 => $this->form->getInput('perm_input_script_method'),
+			);
 		} else {
 			$permission = (array)$this->form->getInput('permission_' . $perm_type);
 		}

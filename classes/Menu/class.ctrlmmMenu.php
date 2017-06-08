@@ -46,12 +46,14 @@ class ctrlmmMenu {
 	const TYPE_SEARCH = 11;
 	const TYPE_STATUSBOX = 12;
 	const TYPE_AUTH = 13;
+	const TYPE_SUBTITLE = 14;
 	const PERM_NONE = 100;
 	const PERM_ROLE = 101;
 	const PERM_ROLE_EXEPTION = 104;
 	const PERM_REF_READ = 102;
 	const PERM_REF_WRITE = 103;
 	const PERM_USERID = 105;
+	const PERM_SCRIPT = 106;
 	/**
 	 * @var array
 	 */
@@ -93,10 +95,10 @@ class ctrlmmMenu {
 
 	/**
 	 * @return string
-	 * @deprecated use ilCtrlMainMenuConfig::get(ilCtrlMainMenuConfig::F_CSS_PREFIX)
+	 * @deprecated use ilCtrlMainMenuConfig::getConfigValue(ilCtrlMainMenuConfig::F_CSS_PREFIX)
 	 */
 	public static function getCssPrefix() {
-		return ilCtrlMainMenuConfig::get(ilCtrlMainMenuConfig::F_CSS_PREFIX);
+		return ilCtrlMainMenuConfig::getConfigValue(ilCtrlMainMenuConfig::F_CSS_PREFIX);
 	}
 
 
@@ -162,7 +164,7 @@ class ctrlmmMenu {
 	 * @return string
 	 */
 	/*public function getCssPrefix() {
-		return ilCtrlMainMenuConfig::get(ilCtrlMainMenuConfig::F_CSS_PREFIX);
+		return ilCtrlMainMenuConfig::getConfigValue(ilCtrlMainMenuConfig::F_CSS_PREFIX);
 	}*/
 
 	/**

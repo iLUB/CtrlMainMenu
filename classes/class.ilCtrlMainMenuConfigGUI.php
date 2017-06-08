@@ -86,12 +86,12 @@ class ilCtrlMainMenuConfigGUI extends ilPluginConfigGUI {
 			'css_inactive' => array(
 				'type' => 'ilTextInputGUI',
 			),
-			//			'doubleclick_prevention' => array(
-			//				'type' => 'ilCheckboxInputGUI',
-			//			),
-			//			'simple_form_validation' => array(
-			//				'type' => 'ilCheckboxInputGUI',
-			//			),
+						'doubleclick_prevention' => array(
+							'type' => 'ilCheckboxInputGUI',
+						),
+						'simple_form_validation' => array(
+							'type' => 'ilCheckboxInputGUI',
+						),
 			'replace_full_header' => array(
 				'type' => 'ilCheckboxInputGUI',
 			),
@@ -154,8 +154,9 @@ class ilCtrlMainMenuConfigGUI extends ilPluginConfigGUI {
 		$form->setFormAction($this->ctrl->getFormAction($this));
 
 		$cb = new ilCheckboxInputGUI($this->pl->txt('activate_cache'), 'activate_cache');
+		$cb->setInfo($this->pl->txt('activate_cache_info'));
 		$form->addItem($cb);
-		$form->setValuesByArray(array( 'activate_cache' => ilCtrlMainMenuConfig::get('activate_cache') ));
+		$form->setValuesByArray(array( 'activate_cache' => ilCtrlMainMenuConfig::getConfigValue('activate_cache') ));
 		$form->addCommandButton('updateCacheSettings', $this->pl->txt('update_cache_settings'));
 
 		$this->tpl->setContent($form->getHTML());
@@ -199,10 +200,12 @@ class ilCtrlMainMenuConfigGUI extends ilPluginConfigGUI {
 		foreach ($_POST['position'] as $k => $v) {
 
 			$obj = ctrlmmEntryInstaceFactory::getInstanceByEntryId($v)->getObject();
-            if($obj){
-                $obj->setPosition($k);
-                $obj->update();
-            }
+
+			if($obj instanceof ctrlmmEntry) {
+				$obj->setPosition($k);
+				$obj->update();
+			}
+
 		}
 		ilUtil::sendSuccess($this->pl->txt('sorting_saved'));
 		$this->ctrl->redirect($this);
@@ -224,11 +227,11 @@ class ilCtrlMainMenuConfigGUI extends ilPluginConfigGUI {
 		$select = new ilPropertyFormGUI();
 		$select->setFormAction($this->ctrl->getFormAction($this));
 		$select->setTitle($this->pl->txt('select_type'));
-		$se = new ilSelectInputGUI($this->pl->txt('type'), 'type');
+		$se = new ilSelectInputGUI($this->pl->txt('common_type'), 'type');
 		$se->setOptions(ctrlmmMenu::getAllTypesAsArray(true, $_GET['parent_id']));
 		$select->addItem($se);
-		$select->addCommandButton('addEntry', $this->pl->txt('select'));
-		$select->addCommandButton('configure', $this->pl->txt('cancel'));
+		$select->addCommandButton('addEntry', $this->pl->txt('common_select'));
+		$select->addCommandButton('configure', $this->pl->txt('common_cancel'));
 		$this->tpl->setContent($select->getHTML());
 	}
 
@@ -313,8 +316,8 @@ class ilCtrlMainMenuConfigGUI extends ilPluginConfigGUI {
 		$conf = new ilConfirmationGUI();
 		ilUtil::sendQuestion($this->pl->txt('qst_delete_entry'));
 		$conf->setFormAction($this->ctrl->getFormAction($this));
-		$conf->setConfirm($this->pl->txt('delete'), 'deleteObject');
-		$conf->setCancel($this->pl->txt('cancel'), 'configure');
+		$conf->setConfirm($this->pl->txt('common_delete'), 'deleteObject');
+		$conf->setCancel($this->pl->txt('common_cancel'), 'configure');
 		$conf->addItem('entry_id', $_GET['entry_id'], $entry->getTitle());
 		$this->tpl->setContent($conf->getHTML());
 	}
@@ -337,10 +340,10 @@ class ilCtrlMainMenuConfigGUI extends ilPluginConfigGUI {
 	//
 	public function getValues() {
 		foreach ($this->getFields() as $key => $item) {
-			$values[$key] = ilCtrlMainMenuConfig::get($key);
+			$values[$key] = ilCtrlMainMenuConfig::getConfigValue($key);
 			if (is_array($item['subelements'])) {
 				foreach ($item['subelements'] as $subkey => $subitem) {
-					$values[$key . '_' . $subkey] = ilCtrlMainMenuConfig::get($key . '_' . $subkey);
+					$values[$key . '_' . $subkey] = ilCtrlMainMenuConfig::getConfigValue($key . '_' . $subkey);
 				}
 			}
 		}
@@ -371,7 +374,7 @@ class ilCtrlMainMenuConfigGUI extends ilPluginConfigGUI {
 			$this->form->addItem($field);
 		}
 		$this->form->addCommandButton('save', $lng->txt('save'));
-		$this->form->setTitle($this->pl->txt('configuration'));
+		$this->form->setTitle($this->pl->txt('common_configuration'));
 		$this->form->setFormAction($ilCtrl->getFormAction($this));
 
 		return $this->form;

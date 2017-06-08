@@ -1,0 +1,96 @@
+common_actions#:#Acties
+common_cancel#:#Anuleren
+common_cmd#:#Commando
+common_configuration#:#Configuratie
+common_create#:#Opslaan
+common_delete#:#Verwijderen
+common_edit#:#Wijzigen
+common_link#:#URL
+common_recursive#:#Item moet actief zijn, zelfs bij sub-objecten
+common_select#:#Selecteren Type
+common_settings#:#Specifieke instellingen
+common_target#:#Doel
+common_title#:#Titel
+common_type#:#Type
+activate_cache#:#Inschakelen GlobalCache (experimenteel)
+activate_cache_info#:#Entries zullen worden opgeslagen in Webserver's geheugen voor 120 seconden.
+add_new#:#Toevoegen Item
+back_to_main#:#Terug
+cache_cleared#:#Cache geleegd
+cache_settings#:#Cache
+cache_settings_updated#:#Cache-Settings opgeslagen
+clear_cache#:#Legen van Cache
+conf_saved#:#Opgeslagen
+create_and_stay#:#Opslaan
+css_active#:#Actieve CSS Class
+css_inactive#:#Inactieve CSS Class
+css_prefix#:#CSS Prefix
+css_settings#:#CSS Instellingen
+doubleclick_prevention#:#Voorkom dubbelklikken (experimenteel)
+edit_childs#:#Items wijzigen
+entry_added#:#Item toegevoegd
+entry_deleted#:#Item verwijderd
+entry_updated#:#Item gewijzigd
+form_title#:#Toevoegen nieuw item
+get_parameters#:#URL-Parameters
+get_parameters_description#:#De eerste input is de naam van de parameter. The tweede is de waarde. De output is iets als: URL?name1=waarde1&name2=waarde2
+get_param_name#:#MISSING
+get_param_value#:#MISSING
+gui_class#:#GUI Classes, comma-separated
+list_title#:#Menu Items
+new_page#:#Nieuw Window
+not_visible_for_admin#:#<p class='warning'>Niet zichtbaar voor huidige gebruiker</p>
+no_childs#:#<p class='warning'>Niet zichtbaar omdat er geen items zijn</p>
+permission_type#:#Selecteer Toegangsbeperkingen
+perm_input#:#Input:
+perm_input_locale#:#Lokale Rollen
+perm_input_locale_info#:#Geef ID's van lokale rollen in(gescheiden door komma's)
+perm_input_script_class#:#Class Naam
+perm_input_script_method#:#Method Naam
+perm_input_script_path#:#Script Pad
+perm_input_user#:#User-IDs
+perm_input_user_info#:#User-IDs gescheiden door komma's
+perm_none#:#Geen toegangsbeperkingen
+perm_ref_read#:#Leestoegang op Ref-ID
+perm_ref_write#:#Schrijftoegang op Ref-ID
+perm_role#:#Beperkt tot rol
+perm_role_exeption#:#Alle rollen behalve de volgende
+perm_script#:#Controleer rechten per script (Geavanceerd)
+perm_userid#:#Alleen voor sommige gebruikers
+qst_delete_entry#:#Weet je zeker dat je het volgende item wilt verwijderen?
+ref_id#:#Ref-ID
+replace_full_header#:#Volledige Header vervangen (experimenteel)
+same_page#:#Zelfde Window
+save_sorting#:#Volgorde Opslaan
+select_type#:#Selecteer Type
+settentr_button_save#:#Opslaan
+show_icons#:#Iconen tonen
+show_logout#:#Logout tonen
+show_with_no_children#:#Ook tonen als er geen kind elementen zijn
+simple_form_validation#:#Inschakelen eenvoudige formuliervalidatie (experimenteel)
+sorting_saved#:#Volgorde Opslaan
+tabs_title_childs#:#Wijzigen dropdown
+tab_main#:#Wijzigen items
+title_de#:#Duitste Titel
+title_en#:#Engelse Titel
+title_fr#:#Franse Titel
+title_it#:#Italiaanse Titel
+title_nl#:#Nederlandse Titel
+type_admin#:#Beheer
+type_auth#:#Authenticatie
+type_ctrl#:#ilCtrl
+type_desktop#:#Persoonlijk Scherm
+type_dropdown#:#Dropdown
+type_lastvisited#:#Laatste bezocht
+type_link#:#URL
+type_refid#:#Ref-ID
+type_repository#:#Studiecentrum
+type_search#:#Snel-zoeken
+type_separator#:#Scheiding
+type_settings#:#Gebruikersinstellingen
+type_statusbox#:#E-mail-Status
+type_subtitle#:#Subtitel
+update_cache_settings#:#Opslaan
+use_image#:#Gebruiken van pijlafbeelding
+use_user_image#:#Gebruik Gebruikersafbeelding als titel
+disable_active#:#MISSING

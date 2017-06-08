@@ -60,3 +60,52 @@ require_once('./Customizing/global/plugins/Services/UIComponent/UserInterfaceHoo
 $ilDB->modifyTableColumn(ctrlmmEntry::returnDbTableName(), 'parent', array(
     'length' => '8',
 ));
+?>
+
+<#7>
+<?php
+global $ilDB;
+
+require_once('./Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/CtrlMainMenu/classes/class.ctrlmmData.php');
+
+if ($ilDB->tableColumnExists(ctrlmmData::returnDbTableName(), 'data_type')) {
+    $ilDB->modifyTableColumn(ctrlmmData::returnDbTableName(), 'data_type', array(
+        'notnull' => true,
+        'default' => ctrlmmData::DATA_TYPE_STRING,
+    ));
+} else {
+    $ilDB->addTableColumn(ctrlmmData::returnDbTableName(), 'data_type', array(
+        'type' => 'text',
+        'notnull' => true,
+        'length' => 10,
+        'default' => ctrlmmData::DATA_TYPE_STRING,
+    ));
+}
+?>
+<#8>
+<?php
+global $ilDB;
+$ilDB->manipulate('DELETE FROM ctrl_classfile WHERE comp_prefix IN ("ui_uihk_ctrlmm", "ui_uihk_ctrlmainmenu");');
+?>
+<#9>
+<?php
+global $ilDB;
+$ilDB->modifyTableColumn('ui_uihk_ctrlmm_t', 'language_key', array( "length" => 64 ));
+$ilDB->addIndex('ui_uihk_ctrlmm_t', array('entry_id', 'language_key'), 'i2');
+$ilDB->addIndex('ui_uihk_ctrlmm_d', array('parent_id'), 'i2');
+$ilDB->addIndex('ui_uihk_ctrlmm_e', array('parent'), 'i2');
+?>
+<#10>
+<?php
+require_once('./Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/CtrlMainMenu/classes/EntryInstaceFactory/class.ctrlmmEntryInstaceFactory.php');
+foreach (ctrlmmEntry::get() as $ctrlmmEntry) {
+	/**
+	 * @var $ctrlmmEntry ctrlmmEntryAdmin
+	 */
+	if ($ctrlmmEntry->getType() == ctrlmmMenu::TYPE_ADMIN && $ctrlmmEntry->getPermissionType() == ctrlmmMenu::PERM_NONE) {
+		$ctrlmmEntry->setPermissionType(ctrlmmMenu::PERM_ROLE);
+		$ctrlmmEntry->setPermission("[2]");
+		$ctrlmmEntry->update();
+	}
+}
+?>

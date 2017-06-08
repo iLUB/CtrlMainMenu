@@ -3,45 +3,48 @@
 require_once('./Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/CtrlMainMenu/classes/Entry/class.ctrlmmEntryGUI.php');
 
 /**
- * ctrlmmEntrySeparatorGUI
+ * ctrlmmEntrySubtitleGUI
  *
- * @author  Fabian Schmid <fs@studer-raimann.ch>
- * @version 2.0.02
+ * @author  Martin Studer <ms@studer-raimann.ch>
+ * @version 1.0.0
  *
  */
-class ctrlmmEntrySeparatorGUI extends ctrlmmEntryGUI {
+class ctrlmmEntrySubtitleGUI extends ctrlmmEntryGUI {
 
 	/**
 	 * @param string $mode
 	 */
 	public function initForm($mode = 'create') {
 		parent::initForm($mode);
+
+		$cb = new ilCheckboxInputGUI($this->pl->txt('show_with_no_children'), 'show_with_no_children');
+		$this->form->addItem($cb);
+
 		/**
 		 * @var $permission_type ilRadioGroupInputGUI
 		 * @var $item            ilTextInputGUI
 		 */
 		$permission_type = $this->form->getItemByPostVar('permission_type');
-		$permission_type->setDisabled(true);
-
 		foreach (ctrlmmEntry::getAllLanguageIds() as $language) {
 			$item = $this->form->getItemByPostVar('title_' . $language);
-			$item->setDisabled(true);
 			$item->setRequired(false);
 		}
 	}
 
-
-	/**
-	 * @param string $entry_div_id
-	 * @return string
-	 */
-	public function renderEntry($entry_div_id = '') {
-		unset($entry_div_id);
-
-		$this->html = $this->pl->getTemplate('tpl.menu_separator.html', false, false);
-
-		return $this->html->get();
+	public function setFormValuesByArray() {
+		$values = parent::setFormValuesByArray();
+		$values['show_with_no_children'] = $this->entry->getShowWithNoChildren();
+		$this->form->setValuesByArray($values);
 	}
+
+
+	public function createEntry() {
+		parent::createEntry();
+		$this->entry->setShowWithNoChildren($this->form->getInput('show_with_no_children'));
+		$this->entry->update();
+	}
+
+
 }
 
 ?>

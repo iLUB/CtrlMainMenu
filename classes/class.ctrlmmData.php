@@ -10,6 +10,10 @@
 class ctrlmmData extends ActiveRecord {
 
 	const TABLE_NAME = 'ui_uihk_ctrlmm_d';
+	const DATA_TYPE_STRING = 'str';
+	const DATA_TYPE_ARRAY = 'arr';
+	const DATA_TYPE_INT = 'int';
+	const DATA_TYPE_BOOL = 'bool';
 	/**
 	 * @var int
 	 *
@@ -45,20 +49,31 @@ class ctrlmmData extends ActiveRecord {
 	 * @con_length     1024
 	 */
 	public $data_value = '';
+	/**
+	 * @var string
+	 *
+	 * @con_has_field  true
+	 * @con_fieldtype  text
+	 * @con_length     10
+	 */
+	public $data_type = self::DATA_TYPE_STRING;
 
 
 	/**
 	 * @return string
 	 * @description Return the Name of your Database Table
-	 * @deprecated
 	 */
 	static function returnDbTableName() {
 		return self::TABLE_NAME;
 	}
 
-	//
-	// Static
-	//
+
+	/**
+	 * @var array
+	 */
+	protected static $instance_cache = array();
+
+
 	/**
 	 * @param $parent_id
 	 * @param $data_key
@@ -66,17 +81,22 @@ class ctrlmmData extends ActiveRecord {
 	 * @return ctrlmmData
 	 */
 	public static function _getInstanceForDataKey($parent_id, $data_key) {
+		if (!empty($instance_cache[$parent_id][$data_key])) {
+			return $instance_cache[$parent_id][$data_key];
+		}
 		$result = self::where(array( 'parent_id' => $parent_id, 'data_key' => $data_key ));
 
 		if ($result->hasSets()) {
-			return $result->first();
+			$instance_cache[$parent_id][$data_key] = $result->first();
 		} else {
 			$instance = new self();
 			$instance->setParentId($parent_id);
 			$instance->setDataKey($data_key);
 
-			return $instance;
+			$instance_cache[$parent_id][$data_key] = $instance;
 		}
+
+		return $instance_cache[$parent_id][$data_key];
 	}
 
 
@@ -106,6 +126,24 @@ class ctrlmmData extends ActiveRecord {
 
 
 	/**
+	 * @param $value
+	 * @return string
+	 */
+	public static function _getDataTypeForValue($value) {
+		switch (true) {
+			case (is_array($value));
+				return self::DATA_TYPE_ARRAY;
+			case (is_bool($value));
+				return self::DATA_TYPE_BOOL;
+			case (is_int($value));
+				return self::DATA_TYPE_INT;
+			default:
+				return self::DATA_TYPE_STRING;
+		}
+	}
+
+
+	/**
 	 * @param $parent_id
 	 *
 	 * @return array
@@ -115,7 +153,20 @@ class ctrlmmData extends ActiveRecord {
 
 		$data = array();
 		foreach ($sets as $set) {
-			$data[$set->getDataKey()] = $set->getDataValue();
+			switch ($set->getDataType()) {
+				case self::DATA_TYPE_ARRAY:
+					$data[$set->getDataKey()] = json_decode($set->getDataValue(), true);
+					break;
+				case self::DATA_TYPE_INT:
+					$data[$set->getDataKey()] = $set->getDataValue();
+					break;
+				case self::DATA_TYPE_BOOL:
+					$data[$set->getDataKey()] = $set->getDataValue() ? '1' : '0';
+					break;
+				default:
+					$data[$set->getDataKey()] = $set->getDataValue();
+					break;
+			}
 		}
 
 		return $data;
@@ -183,6 +234,22 @@ class ctrlmmData extends ActiveRecord {
 	 */
 	public function getParentId() {
 		return $this->parent_id;
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getDataType() {
+		return $this->data_type;
+	}
+
+
+	/**
+	 * @param string $data_type
+	 */
+	public function setDataType($data_type) {
+		$this->data_type = $data_type;
 	}
 }
 
