@@ -60,7 +60,6 @@ class ctrlmmEntryCtrl extends ctrlmmEntry {
 	 * @var ilCtrl
 	 */
 	protected $ctrl;
->>>>>>> master
 
 
 	/**
@@ -102,35 +101,39 @@ class ctrlmmEntryCtrl extends ctrlmmEntry {
 
 
 	/**
-<<<<<<< HEAD
 	 * @return string
 	 */
-	public function getLink() {
-		$link = '';
-		global $ilUser;
-		/**
-		 * @var $ilUser ilObjUser
-		 */
-		$gui_classes = @explode(',', $this->getGuiClass());
-		if (ctrlmmMenu::isOldILIAS()) {
-			$ctrlTwo = new ilCtrl();
-			if ($ctrlTwo->checkTargetClass($gui_classes)) {
-				$ctrlTwo->setTargetScript('ilias.php');
-				$a_base_class = $_GET['baseClass'];
-				$cmd = $_GET['cmd'];
-				$cmdClass = $_GET['cmdClass'];
-				$cmdNode = $_GET['cmdNode'];
-				$ctrlTwo->initBaseClass($gui_classes[0]);
-				$link = $ctrlTwo->getLinkTargetByClass($gui_classes, $this->getCmd());
-				$_GET['baseClass'] = $a_base_class;
-				$_GET['cmd'] = $cmd;
-				$_GET['cmdClass'] = $cmdClass;
-				$_GET['cmdNode'] = $cmdNode;
-			} else {
-				if (self::DEBUG) {
-					ilUtil::sendFailure('ctrlmmEntryCtrl::getLink() : ERROR parsing ilCtrl-Link', true);
-				}
-=======
+	public function getLink()
+    {
+        $link = '';
+        global $ilUser;
+        /**
+         * @var $ilUser ilObjUser
+         */
+        $gui_classes = @explode(',', $this->getGuiClass());
+        if (ctrlmmMenu::isOldILIAS()) {
+            $ctrlTwo = new ilCtrl();
+            if ($ctrlTwo->checkTargetClass($gui_classes)) {
+                $ctrlTwo->setTargetScript('ilias.php');
+                $a_base_class = $_GET['baseClass'];
+                $cmd = $_GET['cmd'];
+                $cmdClass = $_GET['cmdClass'];
+                $cmdNode = $_GET['cmdNode'];
+                $ctrlTwo->initBaseClass($gui_classes[0]);
+                $link = $ctrlTwo->getLinkTargetByClass($gui_classes, $this->getCmd());
+                $_GET['baseClass'] = $a_base_class;
+                $_GET['cmd'] = $cmd;
+                $_GET['cmdClass'] = $cmdClass;
+                $_GET['cmdNode'] = $cmdNode;
+            } else {
+                if (self::DEBUG) {
+                    ilUtil::sendFailure('ctrlmmEntryCtrl::getLink() : ERROR parsing ilCtrl-Link', true);
+                }
+            }
+        }
+    }
+
+    /**
 	 * @return null|string
 	 */
 	protected function getError() {
