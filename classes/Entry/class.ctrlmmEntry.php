@@ -2,7 +2,6 @@
 
 require_once('./Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/CtrlMainMenu/classes/class.ctrlmmData.php');
 require_once('./Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/CtrlMainMenu/classes/class.ctrlmmTranslation.php');
-require_once('./Services/Language/classes/class.ilLanguage.php');
 require_once('./Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/CtrlMainMenu/classes/Menu/class.ctrlmmMenu.php');
 require_once('./Customizing/global/plugins/Services/UIComponent/UserInterfaceHook/CtrlMainMenu/classes/EntryInstaceFactory/class.ctrlmmEntryInstaceFactory.php');
 /*
@@ -157,7 +156,9 @@ class ctrlmmEntry extends ActiveRecord {
 		if (isset($primary_key)) {
 			foreach (ctrlmmData::getDataForEntry($this->getId()) as $k => $v) {
 				if (self::isAdditionalField(get_class($this), $k)) {
-					$this->{$k} = $v;
+					if($v !== null) {
+						$this->{$k} = $v;
+					}
 				}
 			}
 
@@ -383,7 +384,6 @@ class ctrlmmEntry extends ActiveRecord {
 			$this->update();
 		} else {
 			parent::create();
-
 			$this->writeAdditionalData();
 			$this->writeTranslations();
 		}
@@ -497,7 +497,16 @@ class ctrlmmEntry extends ActiveRecord {
 	protected function writeAdditionalData() {
 		foreach (self::getAdditionalFieldsAsArray($this) as $k => $v) {
 			$data = ctrlmmData::_getInstanceForDataKey($this->getId(), $k);
-			$data->setDataValue($v);
+
+			$type = ctrlmmData::_getDataTypeForValue($v);
+
+			$data->setDataType($type);
+			if($type == ctrlmmData::DATA_TYPE_ARRAY) {
+				$data->setDataValue(json_encode($v));
+			} else {
+				$data->setDataValue($v);
+			}
+
 			$data->store();
 		}
 	}
@@ -606,6 +615,25 @@ class ctrlmmEntry extends ActiveRecord {
 					$state = in_array($ilUser->getId(), json_decode($this->getPermission()));
 					$this->setCachedPermission($state);
 
+					break;
+				case ctrlmmMenu::PERM_SCRIPT:
+					$perm_settings = json_decode($this->getPermission());
+					$path =  $perm_settings[0];
+					$class_name = $perm_settings[1];
+					$method_name = $perm_settings[2];
+
+					if(file_exists($path)) {
+						require_once $path;
+						if(class_exists($class_name)) {
+							$access_object = new $class_name;
+
+							if (method_exists ($access_object, $method_name)) {
+								if($access_object->$method_name()) {
+									$this->setCachedPermission(true);
+								}
+							}
+						}
+					}
 					break;
 				case ctrlmmMenu::PERM_NONE:
 				case NULL;
