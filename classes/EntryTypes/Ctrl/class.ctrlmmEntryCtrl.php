@@ -32,10 +32,8 @@ require_once('./Customizing/global/plugins/Services/UIComponent/UserInterfaceHoo
 class ctrlmmEntryCtrl extends ctrlmmEntry {
 
 	const DEBUG = false;
-
 	const PARAM_NAME = 'param_name';
 	const PARAM_VALUE = 'param_value';
-
 	/**
 	 * @var string
 	 */
@@ -66,14 +64,16 @@ class ctrlmmEntryCtrl extends ctrlmmEntry {
 	 * @param int $id
 	 */
 	function __construct($id = 0) {
+		global $ilCtrl;
+
 		$this->setType(ctrlmmMenu::TYPE_CTRL);
 		$this->restricted = ctrlmmMenu::isOldILIAS();
-		parent::__construct($id);
-		global $ilCtrl;
 		/**
 		 * @var $ilCtrl ilCtrl
 		 */
 		$this->ctrl = $ilCtrl;
+
+		parent::__construct($id);
 	}
 
 
@@ -81,16 +81,16 @@ class ctrlmmEntryCtrl extends ctrlmmEntry {
 	 * @return bool
 	 */
 	public function isActive() {
-		if (! $this->isActiveStateCached()) {
-			$this->setCachedActiveState(true);
+		if (!$this->isActiveStateCached()) {
+			$this->setCachedActiveState(false);
 			$classes = array();
 			foreach (explode(',', $this->getGuiClass()) as $classname) {
 				$classes[] = strtolower($classname);
 			}
 			foreach ($this->ctrl->getCallHistory() as $class) {
 				$strtolower = strtolower($class['class']);
-				if (!in_array($strtolower, $classes)) {
-					$this->setCachedActiveState(false);
+				if (in_array($strtolower, $classes)) {
+					$this->setCachedActiveState(true);
 					break;
 				}
 			}
@@ -101,39 +101,6 @@ class ctrlmmEntryCtrl extends ctrlmmEntry {
 
 
 	/**
-	 * @return string
-	 */
-	public function getLink()
-    {
-        $link = '';
-        global $ilUser;
-        /**
-         * @var $ilUser ilObjUser
-         */
-        $gui_classes = @explode(',', $this->getGuiClass());
-        if (ctrlmmMenu::isOldILIAS()) {
-            $ctrlTwo = new ilCtrl();
-            if ($ctrlTwo->checkTargetClass($gui_classes)) {
-                $ctrlTwo->setTargetScript('ilias.php');
-                $a_base_class = $_GET['baseClass'];
-                $cmd = $_GET['cmd'];
-                $cmdClass = $_GET['cmdClass'];
-                $cmdNode = $_GET['cmdNode'];
-                $ctrlTwo->initBaseClass($gui_classes[0]);
-                $link = $ctrlTwo->getLinkTargetByClass($gui_classes, $this->getCmd());
-                $_GET['baseClass'] = $a_base_class;
-                $_GET['cmd'] = $cmd;
-                $_GET['cmdClass'] = $cmdClass;
-                $_GET['cmdNode'] = $cmdNode;
-            } else {
-                if (self::DEBUG) {
-                    ilUtil::sendFailure('ctrlmmEntryCtrl::getLink() : ERROR parsing ilCtrl-Link', true);
-                }
-            }
-        }
-    }
-
-    /**
 	 * @return null|string
 	 */
 	protected function getError() {
@@ -205,21 +172,9 @@ class ctrlmmEntryCtrl extends ctrlmmEntry {
 			$link = $this->ctrl->getLinkTargetByClass($gui_classes, $this->getCmd());
 			if ($this->getAdditions()) {
 				$link .= '&' . $this->getAdditions();
-
 			}
-		} else {
-			try {
-				$link = $this->ctrl->getLinkTargetByClass($gui_classes, $this->getCmd());
-				if ($this->getAdditions()) {
-					$link .= '&' . $this->getAdditions();
-				}
-				if ($this->getRefId()) {
-					$link .= '&ref_id=' . $this->getRefId();
-				}
-			} catch (Exception $e) {
-				if (self::DEBUG AND $ilUser->getId() == 6) {
-					ilUtil::sendFailure('ctrlmmEntryCtrl::getLink() : ERROR parsing ilCtrl-Link (' . $e->getMessage() . ')', true);
-				}
+			if ($this->getRefId()) {
+				$link .= '&ref_id=' . $this->getRefId();
 			}
 
 			if (is_array($this->getGetParams())) {
